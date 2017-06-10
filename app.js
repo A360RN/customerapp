@@ -81,28 +81,19 @@ app.post('/users', function (req, res) {
 
     var errors = req.validationErrors();
 
-    if (errors) {
-        res.render('index', {
-            title: 'Customers',
-            users: users
-        })
-    } else {
+    if (!errors) {
+    
         var newUser = {
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email
         }
-        contact
-        console.log('Success');
+        users.push(newUser);
     }
-
-    var newUser = {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        email: req.body.email
-    }
-
-    console.log(newUser);
+    res.render('index',{
+        title: 'Customers',
+        users: users
+    });
 })
 
 
