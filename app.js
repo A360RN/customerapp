@@ -2,6 +2,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 var expressValidator = require('express-validator');
+var mongojs = require('mongojs');
+var db = mongojs('customerapp', ['users']);
+var ObjectId = mongojs.ObjectId;
 
 var app = express();
 
@@ -23,6 +26,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Global vars
+app.use(function (req, res, next) {
+    res.locals.errors = null;
+    next();
+})
 
 // Express Validator Middleware
 app.use(expressValidator({
@@ -68,10 +77,14 @@ app.get('/', function (req, res) {
 });
 
 app.get('/users', function (req, res) {
-    res.render('index', {
-        title: 'Customers',
-        users: users
-    });
+
+    db.users.find(function (err, users) {
+        res.render('index', {
+            title: 'Customers',
+            users: users
+        });
+    })
+
 });
 
 app.post('/users', function (req, res) {
@@ -82,21 +95,33 @@ app.post('/users', function (req, res) {
     var errors = req.validationErrors();
 
     if (!errors) {
-    
         var newUser = {
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email
         }
-        users.push(newUser);
+       
+       db.users.insert(newUser, function(err, result){
+            if(err){
+                console.log(err);
+            }
+            res.redirect('/');
+       })
     }
-    res.render('index',{
-        title: 'Customers',
-        users: users
+});
+
+app.delete('/users/:id', function(req, res){
+    var id = req.params.id;
+    db.users.remove({
+        _id: ObjectId(id)
+    }, function(err){
+        if(err){
+            console.log(err);
+        }
     });
-})
+});
 
 
 app.listen(3000, function () {
     console.log("Server started on port 3000...");
-})
+});
