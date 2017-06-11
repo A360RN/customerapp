@@ -51,27 +51,6 @@ app.use(expressValidator({
     }
 }));
 
-var users = [
-    {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'johndoe@gmail.com'
-    },
-    {
-        id: 1,
-        first_name: 'Bob',
-        last_name: 'Smith',
-        email: 'bobsmith@gmail.com'
-    },
-    {
-        id: 1,
-        first_name: 'Jill',
-        last_name: 'Jackson',
-        email: 'jjackson@gmail.com'
-    }
-]
-
 app.get('/', function (req, res) {
     res.redirect('/users');
 });
